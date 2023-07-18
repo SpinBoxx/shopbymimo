@@ -20,10 +20,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import AlertModal from "@/components/ui/modals/alert-modal";
-import ApiAlert from "@/components/ui/api-alert";
-import { useOrigin } from "@/hooks/use-origin";
+import ImageUpload from "@/components/ui/image-upload";
 
 interface Props {
   initialData: Billboard | null;
@@ -40,6 +39,7 @@ const BillboardForm = ({ initialData }: Props) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const params = useParams();
   const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -47,7 +47,7 @@ const BillboardForm = ({ initialData }: Props) => {
       imageUrl: "",
     },
   });
-  const origin = useOrigin();
+
   const title = initialData ? "Edit billboard" : "Create billboard";
   const description = initialData ? "Edit a billboard" : "Create a billboard";
   const toastMessage = initialData ? "Billboard updated" : "Billboard created.";
@@ -58,12 +58,24 @@ const BillboardForm = ({ initialData }: Props) => {
 
     try {
       setLoading(true);
-      const response = await fetch(`/api/stores/${initialData?.id}`, {
-        method: "PATCH",
-        body: JSON.stringify(data),
-      });
+      if (initialData) {
+        const response = await fetch(
+          `/api/${initialData.storeId}/billboards/${initialData.id}`,
+          {
+            method: "PATCH",
+            body: JSON.stringify(data),
+          }
+        );
+      } else {
+        const response = await fetch(`/api/${params.storeId}/billboards`, {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+      }
+
       router.refresh();
-      toast.success("Billboard updated");
+      router.push(`/${params.storeId}/billboards`);
+      toast.success(toastMessage);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -79,9 +91,11 @@ const BillboardForm = ({ initialData }: Props) => {
       });
       router.refresh();
       router.push("/");
-      toast.success("Store deleted.");
+      toast.success("Billboard deleted.");
     } catch (error) {
-      toast.error("Make sure you removed all products and categories first.");
+      toast.error(
+        "Make sure you removed all categories using this billboard first."
+      );
     } finally {
       setLoading(false);
       setOpen(false);
@@ -117,6 +131,26 @@ const BillboardForm = ({ initialData }: Props) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
+          <FormField
+            control={form.control}
+            name="imageUrl"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Background image</FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      values={field.value ? [field.value] : []}
+                      disabled={loading}
+                      onChange={(url) => field.onChange(url)}
+                      onRemove={() => field.onChange("")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
           <div className="grid grid-cols-3 gap-8">
             <FormField
               control={form.control}
