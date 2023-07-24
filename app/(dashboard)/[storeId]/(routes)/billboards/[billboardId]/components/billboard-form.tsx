@@ -90,7 +90,7 @@ const BillboardForm = ({ initialData }: Props) => {
         method: "DELETE",
       });
       router.refresh();
-      router.push("/");
+      router.push(`/${params.storeId}/billboards`);
       toast.success("Billboard deleted.");
     } catch (error) {
       toast.error(
@@ -177,7 +177,6 @@ const BillboardForm = ({ initialData }: Props) => {
           </Button>
         </form>
       </Form>
-      <Separator />
     </>
   );
 };

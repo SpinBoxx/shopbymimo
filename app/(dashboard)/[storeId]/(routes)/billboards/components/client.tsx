@@ -5,8 +5,15 @@ import Heading from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { Plus } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { BillboardColumn, columns } from "./columns";
+import { DataTable } from "@/components/ui/data-table";
+import { ApiList } from "@/components/ui/api-list";
 
-const BillboardsClient = () => {
+interface Props {
+  data: BillboardColumn[];
+}
+
+const BillboardsClient = ({ data }: Props) => {
   const router = useRouter();
   const params = useParams();
 
@@ -14,7 +21,7 @@ const BillboardsClient = () => {
     <>
       <div className="flex items-center justify-between">
         <Heading
-          title="Billboards (0)"
+          title={`Billboards (${data.length})`}
           description="Manage billboards for yout store"
         />
         <Button
@@ -26,6 +33,10 @@ const BillboardsClient = () => {
         </Button>
       </div>
       <Separator />
+      <DataTable columns={columns} data={data} searchKey="label" />
+      <Heading title="API" description="API calls for Billboards" />
+      <Separator />
+      <ApiList entityIdName="billboardId" entityName="billboards" />
     </>
   );
 };
