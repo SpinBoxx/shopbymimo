@@ -33,7 +33,7 @@ export const CellAction = ({ data }: Props) => {
   const onDelete = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/${params.storeId}/size/${data.id}`, {
+      const response = await fetch(`/api/${params.storeId}/sizes/${data.id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -44,9 +44,7 @@ export const CellAction = ({ data }: Props) => {
         toast.success("Size deleted.");
       }
     } catch (error) {
-      toast.error(
-        "Make sure you removed all categories using this billboard first."
-      );
+      toast.error("Make sure you removed all products using this size first.");
     } finally {
       setLoading(false);
     }
@@ -78,9 +76,7 @@ export const CellAction = ({ data }: Props) => {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="hover:cursor-pointer"
-            onClick={() =>
-              router.push(`/${params.storeId}/billboards/${data.id}`)
-            }
+            onClick={() => router.push(`/${params.storeId}/sizes/${data.id}`)}
           >
             <Edit className="mr-2 w-4 h-4" />
             Update
