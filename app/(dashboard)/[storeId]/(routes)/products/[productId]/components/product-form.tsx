@@ -100,16 +100,28 @@ const ProductForm = ({ initialData, categories, colors, sizes }: Props) => {
             body: JSON.stringify(data),
           }
         );
+        if (response.ok) {
+          router.refresh();
+          router.push(`/${params.storeId}/products`);
+          toast.success(toastMessage);
+        } else {
+          const { message } = await response.json();
+          toast.error(message);
+        }
       } else {
         const response = await fetch(`/api/${params.storeId}/products`, {
           method: "POST",
           body: JSON.stringify(data),
         });
+        if (response.ok) {
+          router.refresh();
+          router.push(`/${params.storeId}/products`);
+          toast.success(toastMessage);
+        } else {
+          const { message } = await response.json();
+          toast.error(message);
+        }
       }
-
-      router.refresh();
-      router.push(`/${params.storeId}/products`);
-      toast.success(toastMessage);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -127,9 +139,7 @@ const ProductForm = ({ initialData, categories, colors, sizes }: Props) => {
       router.push(`/${params.storeId}/products`);
       toast.success("Product deleted.");
     } catch (error) {
-      toast.error(
-        "Make sure you removed all categories using this product first."
-      );
+      toast.error("Something went wrong.");
     } finally {
       setLoading(false);
       setOpen(false);
@@ -222,7 +232,7 @@ const ProductForm = ({ initialData, categories, colors, sizes }: Props) => {
                     <FormLabel>Price</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        type=" "
                         disabled={loading}
                         placeholder="Product price"
                         {...field}
@@ -316,7 +326,7 @@ const ProductForm = ({ initialData, categories, colors, sizes }: Props) => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>Color</FormLabel>
                     <Select
                       disabled={loading}
                       onValueChange={field.onChange}

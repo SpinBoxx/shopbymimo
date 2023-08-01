@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BillboardColumn } from "./columns";
+import { ProductColumn } from "./columns";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -16,7 +16,7 @@ import { useState } from "react";
 import AlertModal from "@/components/ui/modals/alert-modal";
 
 interface Props {
-  data: BillboardColumn;
+  data: ProductColumn;
 }
 
 export const CellAction = ({ data }: Props) => {
@@ -27,23 +27,24 @@ export const CellAction = ({ data }: Props) => {
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Billboard id copied to the clipboard.");
+    toast.success("Product id copied to the clipboard.");
   };
 
   const onDelete = async () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/${params.storeId}/billboards/${data.id}`,
+        `/api/${params.storeId}/products/${data.id}`,
         {
           method: "DELETE",
         }
       );
       if (!response.ok) {
-        toast.error(response.statusText);
+        const { message } = await response.json();
+        toast.error(message);
       } else {
         router.refresh();
-        toast.success("Billboard deleted.");
+        toast.success("Product deleted.");
       }
     } catch (error) {
       toast.error(
@@ -51,6 +52,7 @@ export const CellAction = ({ data }: Props) => {
       );
     } finally {
       setLoading(false);
+      setOpen(false);
     }
   };
 
@@ -81,7 +83,7 @@ export const CellAction = ({ data }: Props) => {
           <DropdownMenuItem
             className="hover:cursor-pointer"
             onClick={() =>
-              router.push(`/${params.storeId}/billboards/${data.id}`)
+              router.push(`/${params.storeId}/products/${data.id}`)
             }
           >
             <Edit className="mr-2 w-4 h-4" />
